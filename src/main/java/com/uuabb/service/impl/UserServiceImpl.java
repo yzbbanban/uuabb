@@ -29,28 +29,31 @@ public class UserServiceImpl implements IUserService {
 
         // 密码登陆 MD5
         String pwd = MD5Util.MD5EncodeUtf8(password);
+        //判断用户是否存在
         User user = userMapper.selectLogin(username, pwd);
         if (user == null) {
             return ServerResponse.createByErrorMsg("密码错误");
         }
+        //置空密码
         user.setPassword(StringUtils.EMPTY);
         return ServerResponse.createBySuccess("登陆成功", user);
     }
 
     @Override
     public ServerResponse<String> register(User user) {
+        //检查用户名是否存在
         ServerResponse validResponse = this.checkValid(user.getUsername(), Const.USERNAME);
         if (!validResponse.isSuccess()) {
             return validResponse;
         }
-
+        //检查邮箱是否存在
         validResponse = this.checkValid(user.getEmail(), Const.EMAIL);
         if (!validResponse.isSuccess()) {
             return validResponse;
         }
         //设置权限
         user.setRole(Const.Role.ROLE_CUSTOMER);
-
+        //md5假面
         user.setPassword(MD5Util.MD5EncodeUtf8(user.getPassword()));
         int resultCount = userMapper.insert(user);
         if (resultCount == 0) {
@@ -100,6 +103,7 @@ public class UserServiceImpl implements IUserService {
         if (resultCount > 0) {
             //说明问题和答案是这个用户的并且正确
             String forgetToken = UUID.randomUUID().toString();
+            //设置 user token
             TokenCache.setKey(TokenCache.TOKEN_PREFIX + username, forgetToken);
             return ServerResponse.createBySuccess(forgetToken);
         }
@@ -107,12 +111,20 @@ public class UserServiceImpl implements IUserService {
 
     }
 
+    /**
+     * 重新设置密码
+     *
+     * @param username
+     * @param passwordNew
+     * @param token
+     * @return
+     */
     @Override
     public ServerResponse<String> forgetRestPassword(String username, String passwordNew, String token) {
         if (StringUtils.isBlank(token)) {
             return ServerResponse.createByErrorMsg("参数错误，请重新发送");
         }
-
+        //获取用户登陆的 token
         String forgetToken = TokenCache.getKey(TokenCache.TOKEN_PREFIX + username);
         if (StringUtils.isBlank(forgetToken)) {
             return ServerResponse.createByErrorMsg("token已过期");
@@ -132,6 +144,14 @@ public class UserServiceImpl implements IUserService {
         return ServerResponse.createByErrorMsg("密码更新失败请重试");
     }
 
+    /**
+     * 重置密码
+     *
+     * @param user
+     * @param passwordOld
+     * @param passwordNew
+     * @return
+     */
     @Override
     public ServerResponse<String> restPassword(User user, String passwordOld, String passwordNew) {
         String md5PasswordOld = MD5Util.MD5EncodeUtf8(passwordOld);
@@ -150,6 +170,12 @@ public class UserServiceImpl implements IUserService {
 
     }
 
+    /**
+     * 更新信息
+     *
+     * @param user
+     * @return
+     */
     @Override
     public ServerResponse<User> updateInformation(User user) {
         int resultCount = userMapper.checkEmailById(user.getEmail(), user.getId());
@@ -171,12 +197,19 @@ public class UserServiceImpl implements IUserService {
         return ServerResponse.createByErrorMsg("更新个人信息失败");
     }
 
+    /**
+     * 获取用户信息
+     *
+     * @param user
+     * @return
+     */
     @Override
     public ServerResponse<User> getInformation(User user) {
         User currentUser = userMapper.selectByPrimaryKey(user.getId());
         if (currentUser == null) {
             return ServerResponse.createByErrorMsg("无此用户");
         }
+        //密码上设置为空
         currentUser.setPassword(StringUtils.EMPTY);
         return ServerResponse.createBySuccess("登录成功", currentUser);
 

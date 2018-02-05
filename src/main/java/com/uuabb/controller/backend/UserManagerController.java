@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.servlet.http.HttpSession;
+
 @Controller
 @RequestMapping("/manage/user")
 public class UserManagerController {
@@ -19,16 +20,26 @@ public class UserManagerController {
     @Autowired
     private IUserService iUserService;
 
-    @RequestMapping(value = "login.do",method = RequestMethod.POST)
+    /**
+     * 管理员后台登录
+     *
+     * @param name
+     * @param password
+     * @param session
+     * @return
+     */
+    @RequestMapping(value = "login.do", method = RequestMethod.POST)
     @ResponseBody
-    public ServerResponse<User> login(String name, String password, HttpSession session){
-        ServerResponse<User> response=iUserService.login(name,password);
-        if (response.isSuccess()){
-            User user=response.getData();
-            if (user.getRole()== Const.Role.ROLE_ADMIN){
-                session.setAttribute(Const.CURRENT_USER,user);
+    public ServerResponse<User> login(String name, String password, HttpSession session) {
+        ServerResponse<User> response = iUserService.login(name, password);
+        if (response.isSuccess()) {
+            User user = response.getData();
+            //判断是否管理员
+            if (user.getRole() == Const.Role.ROLE_ADMIN) {
+                //这是 session 记录用户信息
+                session.setAttribute(Const.CURRENT_USER, user);
                 return response;
-            }else {
+            } else {
                 return ServerResponse.createByErrorMsg("不是管理员，无法登陆");
             }
         }

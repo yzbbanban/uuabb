@@ -27,6 +27,7 @@ import java.util.Map;
 
 /**
  * Created by brander on 2017/12/19
+ * 后台产品接口
  */
 @Controller
 @RequestMapping("/manage/product")

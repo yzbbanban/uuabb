@@ -16,6 +16,7 @@ import javax.servlet.http.HttpSession;
 
 /**
  * Created by brander on 2017/12/18
+ * 后台分类接口
  */
 @Controller
 @RequestMapping("/manage/category")
@@ -27,7 +28,15 @@ public class CategoryManageController {
     @Autowired
     private ICategoryService iCategoryService;
 
-    @RequestMapping(value = "add_category.do",method = RequestMethod.POST)
+    /**
+     * 添加分类
+     *
+     * @param session
+     * @param categoryName
+     * @param parentId
+     * @return
+     */
+    @RequestMapping(value = "add_category.do", method = RequestMethod.POST)
     @ResponseBody
     public ServerResponse<String> addCategory(HttpSession session,
                                               String categoryName,
@@ -47,9 +56,9 @@ public class CategoryManageController {
         }
     }
 
-    @RequestMapping(value = "set_category_name.do",method = RequestMethod.POST)
+    @RequestMapping(value = "set_category_name.do", method = RequestMethod.POST)
     @ResponseBody
-    public ServerResponse<String> updateCategory(HttpSession session,String categoryName, Integer categoryId){
+    public ServerResponse<String> updateCategory(HttpSession session, String categoryName, Integer categoryId) {
         User user = (User) session.getAttribute(Const.CURRENT_USER);
 
         if (user == null) {//未登录
@@ -60,7 +69,7 @@ public class CategoryManageController {
         if (iUserService.checkAdminRole(user).isSuccess()) {
             //是管理员
 
-            return iCategoryService.updateCategory(categoryName,categoryId);
+            return iCategoryService.updateCategory(categoryName, categoryId);
         } else {
             return ServerResponse.createByErrorMsg("无操作权限，非管理员");
         }
@@ -68,9 +77,9 @@ public class CategoryManageController {
 
     }
 
-    @RequestMapping(value = "get_category.do",method = RequestMethod.POST)
+    @RequestMapping(value = "get_category.do", method = RequestMethod.POST)
     @ResponseBody
-    public ServerResponse getChildrenParallelCategory(HttpSession session,Integer parentId){
+    public ServerResponse getChildrenParallelCategory(HttpSession session, Integer parentId) {
 
         User user = (User) session.getAttribute(Const.CURRENT_USER);
 
@@ -89,9 +98,9 @@ public class CategoryManageController {
         }
     }
 
-    @RequestMapping(value = "get_deep_category.do",method = RequestMethod.POST)
+    @RequestMapping(value = "get_deep_category.do", method = RequestMethod.POST)
     @ResponseBody
-    public ServerResponse getCategoryAndDeepChildrenCategory(HttpSession session ,Integer categoryId){
+    public ServerResponse getCategoryAndDeepChildrenCategory(HttpSession session, Integer categoryId) {
         User user = (User) session.getAttribute(Const.CURRENT_USER);
 
         if (user == null) {//未登录

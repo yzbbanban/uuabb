@@ -9,12 +9,17 @@ import org.slf4j.LoggerFactory;
 
 import java.util.concurrent.TimeUnit;
 
+/**
+ * token
+ */
 public class TokenCache {
-    private static  Logger logger= LoggerFactory.getLogger(TokenCache.class);
-    public static final String TOKEN_PREFIX="token_";
-
-    public static LoadingCache<String,String> localCache= CacheBuilder.newBuilder()
-            .initialCapacity(1000).maximumSize(10000).expireAfterAccess(12, TimeUnit.HOURS)
+    private static Logger logger = LoggerFactory.getLogger(TokenCache.class);
+    public static final String TOKEN_PREFIX = "token_";
+    //token 缓存
+    public static LoadingCache<String, String> localCache = CacheBuilder.newBuilder()
+            .initialCapacity(1000)//初始容量大小
+            .maximumSize(10000)//最大长度
+            .expireAfterAccess(12, TimeUnit.HOURS)//存活时间
             .build(new CacheLoader<String, String>() {
                 @Override
                 public String load(String s) throws Exception {
@@ -22,19 +27,22 @@ public class TokenCache {
                 }
             });
 
-    public static void setKey(String key,String value){
-        localCache.put(key,value);
+    //设置 token
+    public static void setKey(String key, String value) {
+        localCache.put(key, value);
     }
 
-    public static String getKey(String key){
-        String value=null;
+    //获取 token
+    public static String getKey(String key) {
+        String value = null;
         try {
-            value=localCache.get(key);
-            if ("null".equals(value)){
+            //获取的 token
+            value = localCache.get(key);
+            if ("null".equals(value)) {
                 return null;
             }
             return value;
-        }catch (Exception e){
+        } catch (Exception e) {
             logger.error(e.getMessage());
         }
         return null;
