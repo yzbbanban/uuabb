@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.uuabb.dao.ImageMapper">
+    <resultMap id="BaseResultMap" type="com.uuabb.pojo.Image">
+        <constructor>
+            <idArg column="id" jdbcType="INTEGER" javaType="java.lang.Integer"/>
+            <arg column="imageUrl" jdbcType="VARCHAR" javaType="java.lang.String"/>
+            <arg column="ip" jdbcType="VARCHAR" javaType="java.lang.String"/>
+            <arg column="createTime" jdbcType="TIMESTAMP" javaType="java.util.Date"/>
+        </constructor>
+    </resultMap>
+    <sql id="Base_Column_List">
+    id, imageUrl, ip,createTime
+  </sql>
+    <insert id="insert" parameterType="com.uuabb.pojo.Product">
+    insert into mmall_image (id, imageUrl, ip, createTime
+      )
+    values (#{id,jdbcType=INTEGER},  #{imageUrl,jdbcType=VARCHAR},
+      #{ip,jdbcType=VARCHAR}, now()
+      )
+  </insert>
+
+
+    <select id="selectImageList" resultType="com.uuabb.pojo.Image">
+        SELECT
+        <include refid="Base_Column_List"/>
+        FROM mmall_image
+        ORDER BY id ASC
+    </select>
+
+
+</mapper>
